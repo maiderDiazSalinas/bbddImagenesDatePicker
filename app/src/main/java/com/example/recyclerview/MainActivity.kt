@@ -1,23 +1,30 @@
 package com.example.recyclerview
 
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 
 class MainActivity : AppCompatActivity() {
+
+    val database by lazy {BDJuegos.getDatabase(this)}
+    val miRepositorio by lazy {JuegosRepositorio(database.miDAO())}
+
+    val miViewModel:VM by viewModels { JuegosViewModelFactory(miRepositorio) }
+
+    //lateinit var navHost: NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
+        this.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        //navHost= supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -31,8 +38,12 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.ajustes -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return super.onSupportNavigateUp() || findNavController(R.id.nav_host_fragment).navigateUp()
     }
 }
